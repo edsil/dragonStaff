@@ -2,16 +2,23 @@
 
 window.onload = function () {
     loadCardsData();
-    cardsContainer = document.getElementById("contentBox");
+    headbox = document.getElementById("headbox");
+    btnContainer = document.getElementById("btnContainer");
     updateWH();
     searchBox = document.getElementById("searchbox");
     btnConfirm = document.getElementById("confirm");
     addEvents();
+
+    for (let i = 0; i < 44; i++) {
+        let id = String(1000010 + i * 10);
+        let name = "./final_assets/final_" + id + ".png";
+        addBtnV1(name, id);
+    }
+    // searchAndDisplay();
 };
-const initRnd = 25;
 var cards = {};
 const leaderSkills = [];
-var searchBox, btnConfirm, cardsContainer;
+var canvas, ctx, searchBox, btnConfirm, headbox, canvasContainer, btnContainer;
 var width, height;
 
 function addEvents() {
@@ -34,31 +41,22 @@ function searchAndDisplay() {
     }
 }
 
-function displayRandom(n) {
-    var keys = Object.keys(cards);
-    for (let i = 0; i < n; i++) {
-        let rnd = Math.floor(Math.random() * keys.length);
-        let filePicName = "./final_assets/final_" + keys[rnd] + ".png";
-        addBtnV2(filePicName, cards[keys[rnd]]);
-    }
-}
-
 function init() {}
 
 function updateWH() {
-    let menuBar = 0;
+    let menuBar = headbox.clientHeight;
     //canvasContainer.style.top = String(menuBar) + "px";
-    //cardsContainer.style.top = String(menuBar) + "px";
+    btnContainer.style.top = String(menuBar) + "px";
     width = Math.floor(window.innerWidth - window.scrollX - 20);
     height = window.innerHeight;
     //ctx.canvas.width = width;
     //ctx.canvas.height = height;
-    //cardsContainer.width = width;
+    btnContainer.width = width;
 }
 
 function clearButtons() {
-    while (cardsContainer.firstChild) {
-        cardsContainer.removeChild(cardsContainer.firstChild);
+    while (btnContainer.firstChild) {
+        btnContainer.removeChild(btnContainer.firstChild);
     }
 }
 
@@ -71,44 +69,58 @@ function addBtnV1(fileName, id) {
     newImg.src = fileName;
     newImg.width = btnwid;
     newBtn.appendChild(newImg);
-    cardsContainer.appendChild(newBtn);
+    btnContainer.appendChild(newBtn);
     return newBtn;
 }
 
 function addBtnV2(fileName, card) {
     const newDiv = document.createElement("div");
-    newDiv.className = "card";
-    const cardName = document.createElement("p");
-    cardName.className = "cardName";
-    cardName.innerHTML = String(card.name);
-
-    const cardPic = document.createElement("img");
-    cardPic.className = "cardPic";
-    cardPic.src = fileName;
-
-    const cardHP = document.createElement("p");
-    cardHP.className = "cardHP";
-    cardHP.innerHTML = "HP: " + String(card.hp_init);
-
-    const cardATK = document.createElement("p");
-    cardATK.className = "cardATK";
-    cardATK.innerHTML = "ATK: " + String(card.atk_init);
-
-    const cardDEF = document.createElement("p");
-    cardDEF.innerHTML = "ATK: " + String(card.def_init);
-    cardDEF.className = "cardDEF";
-
-    newDiv.append(cardName);
-    newDiv.append(cardPic);
-    newDiv.append(cardHP);
-    newDiv.append(cardATK);
-    newDiv.append(cardDEF);
-    newDiv.onclick = function () {
-        this.className = "cardSelected";
-    };
-
-    cardsContainer.appendChild(newDiv);
+    newDiv.className = "fullCardDiv";
+    const newBtn = document.createElement("button");
+    const newImg = document.createElement("img");
+    let btnwid = width / Math.floor(width / 120);
+    newBtn.className = "btnCard";
+    newBtn.id = card.id;
+    newImg.src = fileName;
+    newImg.width = btnwid - 5;
+    newDiv.width = btnwid;
+    newBtn.appendChild(newImg);
+    newDiv.append(newBtn);
+    newDiv.append(dataTable(card));
+    btnContainer.appendChild(newDiv);
     return newDiv;
+}
+
+function dataTable(card) {
+    const divData = document.createElement("div");
+    const table = document.createElement("table");
+    const tbody = document.createElement("tbody");
+    const tr = document.createElement("tr");
+    const th = document.createElement("th");
+    const td1 = document.createElement("td");
+    const td2 = document.createElement("td");
+    divData.className = "divData";
+    divData.id = String(card.id);
+    table.className = "tableData";
+    th.style.columnSpan = "2";
+    th.innerHTML = "<p>" + String(card.name) + "</p>";
+    var txt1 = "<p><em>HP: </em>" + String(card.hp_init) + "<br>";
+    txt1 += "<em>ATK: </em>" + String(card.atk_init) + "<br>";
+    txt1 += "<em>DEF: </em>" + String(card.def_init) + "</p>";
+    td1.innerHTML = txt1;
+
+    var txt2 = "<p><em>HP: </em>" + String(card.hp_init) + "<br>";
+    txt2 += "<em>ATK: </em>" + String(card.atk_init) + "<br>";
+    txt2 += "<em>DEF: </em>" + String(card.def_init) + "</p>";
+    td2.innerHTML = txt2;
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tbody.appendChild(tr);
+    table.appendChild(th);
+    table.appendChild(tbody);
+    divData.appendChild(table);
+    return divData;
 }
 
 async function loadCardsData() {
@@ -138,7 +150,6 @@ async function loadCardsData() {
     });
     for (i in cards) delete cards[i];
     Object.assign(cards, ...arrCards.map((f) => ({ [f.id]: f })));
-    displayRandom(initRnd);
 }
 
 function csvToArr(csvData, csvHeader, delim = ",", headerInData = false) {
