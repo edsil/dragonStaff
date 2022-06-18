@@ -6,28 +6,39 @@ body {
 header {
     display: flex;
     background: #4448;
-    padding: 0.23em;
+    padding: 3px;
     margin: 0;
     top: 0;
     left: 0;
     position: fixed;
     width: 100%;
     justify-content: center;
-    gap: 1%;
+    align-items: center;
+    gap: 2vmin;
     flex-wrap: wrap;
-    height: 1.5em;
+    height: 25px;
 }
 
-.inputTxt {
-    width: 180px;
+.searchBox {
+    width: clamp(150px, 20vw, 500px);
+    font-size: 17px;
+    height: 21px;
+    margin: 1px 5px;
+    padding: 0;
+    border: 1px;
 }
 
-.btnSearch {
-    width: 60px;
+.btn {
+    width: 100px;
+    font-size: 17px;
+    height: 21px;
+    margin: 1px 5px;
+    padding: 0;
+    border: 1px;
 }
 
 .contentBox {
-    margin: 2em 0.5em 0 0.5em;
+    margin: 30px 5px 0 5px;
     border: 0;
     display: flex;
     flex-wrap: wrap;
@@ -38,28 +49,41 @@ header {
 .card {
     display: grid;
     border: 1px solid black;
-    border-radius: 20px;
-    background-color: rgb(222, 222, 200);
-    grid-template-columns: 10px 30px 100px 30px 10px;
-    grid-template-rows: 43px 150px 30px 30px 30px 30px;
+    border-radius: 15px;
+    background-color: rgb(182, 182, 182);
+    width: clamp(160px, 17vw, 20%);
+    grid-template-columns: 1% 14% 70% 14% 1%;
+    height: clamp(250px, 35vh, 45vh);
+    grid-template-rows: 22% 47% 9% 9% 9% 4%;
+    color: rgb(20,20,20, 0.8);
     transition: 0.3s;
+    margin:10px;
+    padding: 0;
 }
 
 .cardSelected {
     display: grid;
     border: 1px solid black;
-    border-radius: 20px;
-    background-color: rgb(195, 217, 224);
-    grid-template-columns: 10px 30px 100px 30px 10px;
-    grid-template-rows: 43px 150px 30px 30px 30px 30px;
+    border-radius: 15px;
+    background-color: rgb(63, 189, 220);
+    width: clamp(160px, 17vw, 20%);
+    grid-template-columns: 1% 14% 70% 14% 1%;
+    height: clamp(250px, 35vh, 45vh);
+    grid-template-rows: 22% 47% 9% 9% 9% 4%;
+    transition: 0.3s;
+    color: rgb(0,0,0);
+    margin: 10px;
+    padding: 0;
 }
 
 .card:hover {
-    transform: rotate(0.01turn) scale(1.1);
-    background-color: rgb(195, 195, 230);
+    z-index: 1;
+    transform: rotate(0.0turn) scale(1.1);
+    background-color: rgb(122, 185, 200);
     color: rgb(5, 18, 30);
-    border: 3px solid rgb(28, 14, 58);
-    border-style: groove;
+    border: 1px solid rgb(28, 14, 58);
+    color: rgb(10,10,10,0.9);
+    margin: 10px;
 }
 
 .cardName,
@@ -68,6 +92,7 @@ header {
 .cardType,
 .cardDesc {
     justify-self: center;
+    font-size: 10px;
     flex-shrink: 0;
     flex-grow: 0;
 }
@@ -75,33 +100,35 @@ header {
 .cardName {
     grid-column: 1 / 6;
     grid-row: 1;
+    margin: 3px;
+    font-size: clamp(16px, 1.7vw, 1.7vw);
     font-weight: 600;
     text-align: center;
     color: rgb(6, 74, 134);
+    text-justify: distribute;
 }
 
 .cardPic {
     grid-column: 2 / 5;
     grid-row: 2;
-    width: 160px;
+    height: clamp(115px, 100%, 100%);
 }
 
 .cardHP {
     grid-column: 3;
     grid-row: 3;
-    font-size: small;
+    width: 100%;
+    font-size: clamp(12px, 1.5vw, 3.5vw);
 }
 
 .cardATK {
     grid-column: 3;
     grid-row: 4;
-    font-size: small;
-
+    font-size: clamp(12px, 1.5vw, 3.5vw);
 }
 
 .cardDEF {
     grid-column: 3;
     grid-row: 5;
-    font-size: small;
-
+    font-size: clamp(12px, 1.5vw, 3.5vw);
 }

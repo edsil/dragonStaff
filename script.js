@@ -23,7 +23,7 @@ function addEvents() {
 
 function searchAndDisplay() {
     clearButtons();
-    var txt = "super"; //searchBox.value.toLowerCase();
+    var txt = searchBox.value.toLowerCase();
     var filter = {};
     for (const [k, v] of Object.entries(cards)) {
         if (String(v.name).toLowerCase().includes(txt)) filter[k] = v;
@@ -57,8 +57,8 @@ function updateWH() {
 }
 
 function clearButtons() {
-    while (cardsContainer.firstChild) {
-        cardsContainer.removeChild(cardsContainer.firstChild);
+    while (contentBox.firstChild) {
+        contentBox.removeChild(contentBox.firstChild);
     }
 }
 
@@ -88,14 +88,14 @@ function addBtnV2(fileName, card) {
 
     const cardHP = document.createElement("p");
     cardHP.className = "cardHP";
-    cardHP.innerHTML = "HP: " + String(card.hp_init);
+    cardHP.innerHTML = "HP: " + String(card.hp_max);
 
     const cardATK = document.createElement("p");
     cardATK.className = "cardATK";
-    cardATK.innerHTML = "ATK: " + String(card.atk_init);
+    cardATK.innerHTML = "ATK: " + String(card.atk_max);
 
     const cardDEF = document.createElement("p");
-    cardDEF.innerHTML = "ATK: " + String(card.def_init);
+    cardDEF.innerHTML = "DEF: " + String(card.def_max);
     cardDEF.className = "cardDEF";
 
     newDiv.append(cardName);
@@ -128,7 +128,10 @@ async function loadCardsData() {
     console.log("Data:" + data.length);
     console.log("Header:" + cardHeaders.length);
     console.log("Cards:" + cards.length);
+    var mx = 0;
     var arrCards = all_cards.filter((c) => {
+        mx = Math.max(mx, String(c.name).length);
+        if (String(c.name).length >= 53) console.log(c.name, mx);
         return (
             c.open_at != "2030-12-31 23:59:59" &&
             c.id[0] != "9" &&
@@ -136,6 +139,7 @@ async function loadCardsData() {
             c.leader_skill_set_id != ""
         );
     });
+    console.log(mx);
     for (i in cards) delete cards[i];
     Object.assign(cards, ...arrCards.map((f) => ({ [f.id]: f })));
     displayRandom(initRnd);
