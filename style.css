@@ -51,28 +51,13 @@ header {
     border: 1px solid black;
     border-radius: 15px;
     background-color: rgb(182, 182, 182);
-    width: clamp(160px, 17vw, 20%);
+    width: clamp(120px, 10%, 40%);
     grid-template-columns: 1% 14% 70% 14% 1%;
-    height: clamp(250px, 35vh, 45vh);
+    height: clamp(100px, 35vh, 40vh);
     grid-template-rows: 22% 47% 9% 9% 9% 4%;
     color: rgb(20,20,20, 0.8);
     transition: 0.3s;
     margin:10px;
-    padding: 0;
-}
-
-.cardSelected {
-    display: grid;
-    border: 1px solid black;
-    border-radius: 15px;
-    background-color: rgb(63, 189, 220);
-    width: clamp(160px, 17vw, 20%);
-    grid-template-columns: 1% 14% 70% 14% 1%;
-    height: clamp(250px, 35vh, 45vh);
-    grid-template-rows: 22% 47% 9% 9% 9% 4%;
-    transition: 0.3s;
-    color: rgb(0,0,0);
-    margin: 10px;
     padding: 0;
 }
 
@@ -86,13 +71,38 @@ header {
     margin: 10px;
 }
 
+.cardSelected {
+    display: grid;
+    border: 1px solid black;
+    border-radius: 15px;
+    background-color: rgb(63, 189, 220);
+    width: clamp(120px, 10%, 40%);
+    grid-template-columns: 1% 14% 70% 14% 1%;
+    height: clamp(100px, 35vh, 40vh);
+    grid-template-rows: 22% 47% 9% 9% 9% 4%;
+    transition: 1.3s;
+    color: rgb(0,0,0);
+    margin: 10px;
+    padding: 0;
+}
+
+.cardSelected:hover {
+    z-index: 1;
+    transform: rotate(0.0turn) scale(0.9);
+    background-color: rgb(160, 160, 160);
+    color: rgb(5, 18, 30);
+    border: 1px solid rgb(28, 14, 58);
+    color: rgb(10,10,10,0.9);
+    margin: 10px;
+}
+
+
 .cardName,
 .cardPic,
 .cardSym,
 .cardType,
 .cardDesc {
     justify-self: center;
-    font-size: 10px;
     flex-shrink: 0;
     flex-grow: 0;
 }
@@ -101,7 +111,7 @@ header {
     grid-column: 1 / 6;
     grid-row: 1;
     margin: 3px;
-    font-size: clamp(16px, 1.7vw, 1.7vw);
+    font-size: clamp(16px, 18px, 20px);
     font-weight: 600;
     text-align: center;
     color: rgb(6, 74, 134);
@@ -111,24 +121,24 @@ header {
 .cardPic {
     grid-column: 2 / 5;
     grid-row: 2;
-    height: clamp(115px, 100%, 100%);
+    width: 100%;
 }
 
 .cardHP {
     grid-column: 3;
     grid-row: 3;
     width: 100%;
-    font-size: clamp(12px, 1.5vw, 3.5vw);
+    font-size: clamp(12px, 14px, 18px);
 }
 
 .cardATK {
     grid-column: 3;
     grid-row: 4;
-    font-size: clamp(12px, 1.5vw, 3.5vw);
+    font-size: clamp(12px, 14px, 18px);
 }
 
 .cardDEF {
     grid-column: 3;
     grid-row: 5;
-    font-size: clamp(12px, 1.5vw, 3.5vw);
+    font-size: clamp(12px, 14px, 18px);
 }

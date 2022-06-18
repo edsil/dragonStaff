@@ -3,7 +3,6 @@
 window.onload = function () {
     loadCardsData();
     cardsContainer = document.getElementById("contentBox");
-    updateWH();
     searchBox = document.getElementById("searchbox");
     btnConfirm = document.getElementById("confirm");
     addEvents();
@@ -12,12 +11,8 @@ const initRnd = 25;
 var cards = {};
 const leaderSkills = [];
 var searchBox, btnConfirm, cardsContainer;
-var width, height;
 
 function addEvents() {
-    window.addEventListener("resize", () => {
-        updateWH();
-    });
     btnConfirm.onclick = searchAndDisplay;
 }
 
@@ -30,7 +25,7 @@ function searchAndDisplay() {
     }
     for (const [k, v] of Object.entries(filter)) {
         let name = "./final_assets/final_" + k + ".png";
-        addBtnV2(name, v);
+        addCard(name, v);
     }
 }
 
@@ -39,22 +34,11 @@ function displayRandom(n) {
     for (let i = 0; i < n; i++) {
         let rnd = Math.floor(Math.random() * keys.length);
         let filePicName = "./final_assets/final_" + keys[rnd] + ".png";
-        addBtnV2(filePicName, cards[keys[rnd]]);
+        addCard(filePicName, cards[keys[rnd]]);
     }
 }
 
 function init() {}
-
-function updateWH() {
-    let menuBar = 0;
-    //canvasContainer.style.top = String(menuBar) + "px";
-    //cardsContainer.style.top = String(menuBar) + "px";
-    width = Math.floor(window.innerWidth - window.scrollX - 20);
-    height = window.innerHeight;
-    //ctx.canvas.width = width;
-    //ctx.canvas.height = height;
-    //cardsContainer.width = width;
-}
 
 function clearButtons() {
     while (contentBox.firstChild) {
@@ -62,22 +46,10 @@ function clearButtons() {
     }
 }
 
-function addBtnV1(fileName, id) {
-    const newBtn = document.createElement("button");
-    const newImg = document.createElement("img");
-    let btnwid = width / Math.floor(width / 120);
-    newBtn.className = "btnCard";
-    newBtn.id = id;
-    newImg.src = fileName;
-    newImg.width = btnwid;
-    newBtn.appendChild(newImg);
-    cardsContainer.appendChild(newBtn);
-    return newBtn;
-}
-
-function addBtnV2(fileName, card) {
+function addCard(fileName, card) {
     const newDiv = document.createElement("div");
     newDiv.className = "card";
+    newDiv.id = card.id;
     const cardName = document.createElement("p");
     cardName.className = "cardName";
     cardName.innerHTML = String(card.name);
@@ -103,22 +75,22 @@ function addBtnV2(fileName, card) {
     newDiv.append(cardHP);
     newDiv.append(cardATK);
     newDiv.append(cardDEF);
-    newDiv.onclick = function () {
-        this.className = "cardSelected";
-    };
+    newDiv.onclick = clickCard;
 
     cardsContainer.appendChild(newDiv);
     return newDiv;
+}
+
+function clickCard(e) {
+    console.log(this.id);
+    if (this.className == "cardSelected") this.className = "card";
+    else if (this.className == "card") this.className = "cardSelected";
 }
 
 async function loadCardsData() {
     const data = await readCsv("data", "cards.csv");
     const cardHeaders = await readCsv("data", "cardsheader.csv");
 
-    /*Promise.all([data, cardHeaders]).then((e) => {
-        cards = csvToArr(e[0], e[1]);
-        console.log("done loading cards data");
-    });*/
     if (data === -1 || cardHeaders == -1) {
         alert("(63) Error reading Cards");
         return;
@@ -183,13 +155,13 @@ async function readCsv(folder, name) {
             const data = await res.text();
             return data;
         } else {
-            console.log("(112) Error code: " + res.status + ": " + target);
-            alert("(113) Error reading: " + target + ". " + res.status);
+            console.log("Error code: " + res.status + ": " + target);
+            alert("Error reading: " + target + ". " + res.status);
             return -1;
         }
     } catch (err) {
         console.log(err);
-        alert("(118) Error reading: " + target + ". " + err);
+        alert("Error reading: " + target + ". " + err);
         return -1;
     }
 }
