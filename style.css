@@ -7,115 +7,94 @@ header {
     display: flex;
     background: #4448;
     padding: 3px;
-    margin: 0;
     top: 0;
     left: 0;
     position: fixed;
     width: 100%;
     justify-content: center;
     align-items: center;
-    gap: 2vmin;
+    gap: auto;
     flex-wrap: wrap;
     height: 25px;
 }
 
 .searchBox {
-    width: clamp(150px, 20vw, 500px);
+    width: 200px;
     font-size: 17px;
     height: 21px;
     margin: 1px 5px;
-    padding: 0;
-    border: 1px;
+    border: 4px;
 }
 
 .btn {
-    width: 100px;
+    width: 80px;
     font-size: 17px;
     height: 21px;
     margin: 1px 5px;
-    padding: 0;
-    border: 1px;
+    border: 4px;
 }
 
 .contentBox {
-    margin: 30px 5px 0 5px;
+    margin: 33px 2px 0 2px;
     border: 0;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 5px;
+    justify-content:space-around;
+    gap: auto;
 }
 
-.card {
+.card, .cardSelected {
     display: grid;
     border: 1px solid black;
     border-radius: 15px;
-    background-color: rgb(182, 182, 182);
-    width: clamp(120px, 10%, 40%);
+    width: 144px;
     grid-template-columns: 1% 14% 70% 14% 1%;
-    height: clamp(100px, 35vh, 40vh);
+    height: 250px;
     grid-template-rows: 22% 47% 9% 9% 9% 4%;
-    color: rgb(20,20,20, 0.8);
     transition: 0.3s;
-    margin:10px;
-    padding: 0;
+    margin: 7px;
+}
+
+.card {
+    background-color: rgb(182, 182, 182);
+    color: rgb(20,20,20, 0.8);
 }
 
 .card:hover {
     z-index: 1;
-    transform: rotate(0.0turn) scale(1.1);
-    background-color: rgb(122, 185, 200);
+    transform: rotate(0.0turn) scale(1.04);
+    background-color: rgb(182, 189, 210);
     color: rgb(5, 18, 30);
-    border: 1px solid rgb(28, 14, 58);
-    color: rgb(10,10,10,0.9);
-    margin: 10px;
 }
 
 .cardSelected {
-    display: grid;
-    border: 1px solid black;
-    border-radius: 15px;
+    transform: rotate(0.0turn) scale(1.04);
     background-color: rgb(63, 189, 220);
-    width: clamp(120px, 10%, 40%);
-    grid-template-columns: 1% 14% 70% 14% 1%;
-    height: clamp(100px, 35vh, 40vh);
-    grid-template-rows: 22% 47% 9% 9% 9% 4%;
-    transition: 1.3s;
     color: rgb(0,0,0);
-    margin: 10px;
-    padding: 0;
 }
 
 .cardSelected:hover {
     z-index: 1;
-    transform: rotate(0.0turn) scale(0.9);
-    background-color: rgb(160, 160, 160);
+    transform: rotate(0.0turn) scale(1.02);
+    background-color: rgb(80, 191, 210);
     color: rgb(5, 18, 30);
-    border: 1px solid rgb(28, 14, 58);
-    color: rgb(10,10,10,0.9);
-    margin: 10px;
 }
 
-
-.cardName,
-.cardPic,
-.cardSym,
-.cardType,
-.cardDesc {
+.cardName, .cardPic, .cardHP,
+.cardATK, .cardDEF {
     justify-self: center;
+    grid-column: 1 / 6;
     flex-shrink: 0;
     flex-grow: 0;
 }
 
 .cardName {
-    grid-column: 1 / 6;
     grid-row: 1;
-    margin: 3px;
-    font-size: clamp(16px, 18px, 20px);
-    font-weight: 600;
+    font-size: auto;
+    font-weight: bolder;
     text-align: center;
     color: rgb(6, 74, 134);
-    text-justify: distribute;
+    align-self: center;
 }
 
 .cardPic {
@@ -124,21 +103,12 @@ header {
     width: 100%;
 }
 
-.cardHP {
-    grid-column: 3;
-    grid-row: 3;
-    width: 100%;
-    font-size: clamp(12px, 14px, 18px);
+.cardHP, .cardATK, .cardDEF {
+    font-size: small; 
 }
 
-.cardATK {
-    grid-column: 3;
-    grid-row: 4;
-    font-size: clamp(12px, 14px, 18px);
-}
+.cardHP { grid-row: 3;}
 
-.cardDEF {
-    grid-column: 3;
-    grid-row: 5;
-    font-size: clamp(12px, 14px, 18px);
-}
+.cardATK { grid-row: 4;}
+
+.cardDEF { grid-row: 5;}

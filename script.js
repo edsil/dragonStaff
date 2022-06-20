@@ -7,40 +7,63 @@ window.onload = function () {
     btnConfirm = document.getElementById("confirm");
     addEvents();
 };
-const initRnd = 25;
-var cards = {};
-const leaderSkills = [];
+
+//#region Global Variables
+//DOM elements
 var searchBox, btnConfirm, cardsContainer;
+//Data holders
+var cards = {};
+//Helpers
+const initRnd = 25; // Number of random cards displayed when loading
+var timed = 0; // Used for setTimeOut loading few cards at time
+var dispCtn = 0; // Used to count the cards that were already loaded
+//#endregion
 
 function addEvents() {
     btnConfirm.onclick = searchAndDisplay;
+    searchBox.oninput = searchAndDisplay;
 }
 
 function searchAndDisplay() {
-    clearButtons();
+    clearTimeout(timed);
+    dispCtn = 0;
+    clearCardsContainer();
     var txt = searchBox.value.toLowerCase();
-    var filter = {};
+    var filtered = [];
     for (const [k, v] of Object.entries(cards)) {
-        if (String(v.name).toLowerCase().includes(txt)) filter[k] = v;
+        if (String(v.name).toLowerCase().includes(txt)) filtered.push(k);
     }
-    for (const [k, v] of Object.entries(filter)) {
-        let name = "./final_assets/final_" + k + ".png";
-        addCard(name, v);
+    displayTimed(filtered);
+}
+
+function displayTimed(keys) {
+    let i = 0;
+    while (i < 15 && dispCtn < keys.length) {
+        let name = "./final_assets/final_" + keys[dispCtn] + ".png";
+        addCard(name, cards[keys[dispCtn]]);
+        dispCtn++;
+        i++;
+    }
+    if (dispCtn < keys.length) {
+        timed = setTimeout(displayTimed, 100, keys);
     }
 }
 
 function displayRandom(n) {
     var keys = Object.keys(cards);
-    for (let i = 0; i < n; i++) {
+    var rndKeys = {};
+    while (n > 0) {
         let rnd = Math.floor(Math.random() * keys.length);
-        let filePicName = "./final_assets/final_" + keys[rnd] + ".png";
-        addCard(filePicName, cards[keys[rnd]]);
+        if (!rndKeys[rnd]) {
+            rndKeys[rnd] = 1;
+            n--;
+            let filePicName = "./final_assets/final_" + keys[rnd] + ".png";
+            addCard(filePicName, cards[keys[rnd]]);
+        }
     }
 }
 
-function init() {}
-
-function clearButtons() {
+function clearCardsContainer() {
     while (contentBox.firstChild) {
         contentBox.removeChild(contentBox.firstChild);
     }
@@ -82,28 +105,19 @@ function addCard(fileName, card) {
 }
 
 function clickCard(e) {
-    console.log(this.id);
-    if (this.className == "cardSelected") this.className = "card";
-    else if (this.className == "card") this.className = "cardSelected";
+    e.currentTarget.className = e.currentTarget.className == "cardSelected" ? "card" : "cardSelected";
 }
 
 async function loadCardsData() {
-    const data = await readCsv("data", "cards.csv");
-    const cardHeaders = await readCsv("data", "cardsheader.csv");
+    const data = await readCsv("./data/cards.csv");
+    const cardHeaders = await readCsv("./data/cardsheader.csv");
 
     if (data === -1 || cardHeaders == -1) {
-        alert("(63) Error reading Cards");
+        alert("Error Reading Cards Data");
         return;
     }
-
     var all_cards = await csvToArr(data, cardHeaders);
-    console.log("Data:" + data.length);
-    console.log("Header:" + cardHeaders.length);
-    console.log("Cards:" + cards.length);
-    var mx = 0;
     var arrCards = all_cards.filter((c) => {
-        mx = Math.max(mx, String(c.name).length);
-        if (String(c.name).length >= 53) console.log(c.name, mx);
         return (
             c.open_at != "2030-12-31 23:59:59" &&
             c.id[0] != "9" &&
@@ -111,13 +125,89 @@ async function loadCardsData() {
             c.leader_skill_set_id != ""
         );
     });
-    console.log(mx);
-    for (i in cards) delete cards[i];
+    cards = [];
     Object.assign(cards, ...arrCards.map((f) => ({ [f.id]: f })));
     displayRandom(initRnd);
 }
 
-function csvToArr(csvData, csvHeader, delim = ",", headerInData = false) {
+async function readCsv(fileName) {
+    try {
+        const res = await fetch(fileName, {
+            method: "get",
+            headers: {
+                "content-type": "text/csv;charset=UTF-8",
+            },
+        });
+
+        if (res.status === 200) {
+            const data = await res.text();
+            return data;
+        } else {
+            console.log("Error code: " + res.status + ": " + fileName);
+            alert("Error reading: " + fileName + ". " + res.status);
+            return -1;
+        }
+    } catch (err) {
+        console.log(err);
+        alert("Error reading: " + fileName + ". " + err);
+        return -1;
+    }
+}
+
+function csvToArr(csvData, csvHeader, headerInData = false) {
+    let headers, rows;
+    rows = breakRows(csvData);
+
+    if (csvHeader) {
+        headers = breakCols(csvHeader);
+    } else {
+        //If the header is in data, moves it into, if not, just copy it
+        //Then splits it by the delimiter
+        headers = breakCols(headerInData ? rows.shift() : rows[0]);
+        // if first row is not the header, converts it to c0, c1, c2....
+        if (!headerInData) headers = headers.map((e, i) => "c" + i);
+    }
+    const arr = rows.map(function (row) {
+        const values = breakCols(row);
+        const el = headers.reduce(function (object, header, index) {
+            object[header] = values[index];
+            return object;
+        }, {});
+        return el;
+    });
+    return arr;
+
+    function breakRows(data) {
+        var breaker = "--<br><row>--";
+        var re = /,\s*"[^!"]+"\s*,?|\n/gm;
+        var prep = data.replace(re, prepLineBreakCsv);
+        var rows = prep.split(breaker);
+        return rows;
+
+        function prepLineBreakCsv(rows) {
+            if (rows == "\n") return breaker;
+            var ret = rows.replaceAll('"', "");
+            return ret;
+        }
+    }
+
+    function breakCols(data) {
+        var breaker = "--<br><col>--";
+        var re = /,\s*"[^!"]+"\s*,?|,/gm;
+        var prep = data.replace(re, prepCommasCsv);
+        var cols = prep.split(breaker);
+        return cols;
+
+        function prepCommasCsv(cols) {
+            if (cols == ",") return breaker;
+            var ret = breaker + cols.slice(1, -1).replaceAll('"', "") + breaker;
+            return ret;
+        }
+    }
+}
+
+/*
+function csvToArrV1(csvData, csvHeader, delim = ",", headerInData = false) {
     let headers, rows;
     rows = csvData.split("\n");
 
@@ -140,28 +230,4 @@ function csvToArr(csvData, csvHeader, delim = ",", headerInData = false) {
     });
     return arr;
 }
-
-async function readCsv(folder, name) {
-    const target = "./" + folder + "/" + name;
-    try {
-        const res = await fetch(target, {
-            method: "get",
-            headers: {
-                "content-type": "text/csv;charset=UTF-8",
-            },
-        });
-
-        if (res.status === 200) {
-            const data = await res.text();
-            return data;
-        } else {
-            console.log("Error code: " + res.status + ": " + target);
-            alert("Error reading: " + target + ". " + res.status);
-            return -1;
-        }
-    } catch (err) {
-        console.log(err);
-        alert("Error reading: " + target + ". " + err);
-        return -1;
-    }
-}
+*/
