@@ -1,10 +1,15 @@
 "use strict";
+import { loadCSVtoDict } from "./csvParser.js";
+import { createDetailedCard } from "./detailedCard.js";
+const lang = "en";
 
 window.onload = function () {
+    //loadCardsData();
     loadCardsData();
     cardsContainer = document.getElementById("contentBox");
     searchBox = document.getElementById("searchbox");
     btnConfirm = document.getElementById("confirm");
+    windowWidth = window.innerWidth;
     addEvents();
 };
 
@@ -13,6 +18,7 @@ window.onload = function () {
 var searchBox, btnConfirm, cardsContainer;
 //Data holders
 var cards = {};
+var windowWidth;
 //Helpers
 const initRnd = 25; // Number of random cards displayed when loading
 var timed = 0; // Used for setTimeOut loading few cards at time
@@ -22,6 +28,11 @@ var dispCtn = 0; // Used to count the cards that were already loaded
 function addEvents() {
     btnConfirm.onclick = searchAndDisplay;
     searchBox.oninput = searchAndDisplay;
+    window.onresize = updateWindowWidth;
+}
+
+function updateWindowWidth() {
+    windowWidth = window.innerWidth;
 }
 
 function searchAndDisplay() {
@@ -38,7 +49,7 @@ function searchAndDisplay() {
 
 function displayTimed(keys) {
     let i = 0;
-    while (i < 15 && dispCtn < keys.length) {
+    while (i < windowWidth / 85 && dispCtn < keys.length) {
         let name = "./final_assets/final_" + keys[dispCtn] + ".png";
         addCard(name, cards[keys[dispCtn]]);
         dispCtn++;
@@ -61,6 +72,8 @@ function displayRandom(n) {
             addCard(filePicName, cards[keys[rnd]]);
         }
     }
+    let fi = "./final_assets/final_" + keys[1] + ".png";
+    cardsContainer.appendChild(createDetailedCard(fi, cards[keys[1]]));
 }
 
 function clearCardsContainer() {
@@ -109,27 +122,21 @@ function clickCard(e) {
 }
 
 async function loadCardsData() {
-    const data = await readCsv("./data/cards.csv");
-    const cardHeaders = await readCsv("./data/cardsheader.csv");
-
-    if (data === -1 || cardHeaders == -1) {
-        alert("Error Reading Cards Data");
-        return;
-    }
-    var all_cards = await csvToArr(data, cardHeaders);
-    var arrCards = all_cards.filter((c) => {
+    const filter = (c) => {
         return (
             c.open_at != "2030-12-31 23:59:59" &&
             c.id[0] != "9" &&
             String(c.id).endsWith("0") &&
             c.leader_skill_set_id != ""
         );
-    });
+    };
+    const arrCards = await loadCSVtoDict("./data/cardsWithHeader.csv", filter);
     cards = [];
     Object.assign(cards, ...arrCards.map((f) => ({ [f.id]: f })));
     displayRandom(initRnd);
 }
 
+/*
 async function readCsv(fileName) {
     try {
         const res = await fetch(fileName, {
@@ -205,6 +212,29 @@ function csvToArr(csvData, csvHeader, headerInData = false) {
         }
     }
 }
+/*
+
+/*async function loadCardsData() {
+    const data = await readCsv("./data/cards.csv");
+    const cardHeaders = await readCsv("./data/cardsheader.csv");
+
+    if (data === -1 || cardHeaders == -1) {
+        alert("Error Reading Cards Data");
+        return;
+    }
+    var all_cards = await csvToArr(data, cardHeaders);
+    var arrCards = all_cards.filter((c) => {
+        return (
+            c.open_at != "2030-12-31 23:59:59" &&
+            c.id[0] != "9" &&
+            String(c.id).endsWith("0") &&
+            c.leader_skill_set_id != ""
+        );
+    });
+    cards = [];
+    Object.assign(cards, ...arrCards.map((f) => ({ [f.id]: f })));
+    displayRandom(initRnd);
+} */
 
 /*
 function csvToArrV1(csvData, csvHeader, delim = ",", headerInData = false) {
